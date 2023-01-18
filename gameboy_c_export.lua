@@ -97,7 +97,7 @@ file:write("/*\ntile size: " .. #tiles .. "\n")
 if dialog.data.include_map then
     file:write("map size: " .. tiles_size_x .. "x" .. tiles_size_y .. "\n")
 end
-file:write("*/\n\nconst unsigned char " .. var_name .. "_tiles[] = {\n")
+file:write("*/\n\n#include \"" .. var_name .. ".h\"\n\nconst unsigned char " .. var_name .. "_tiles[] = {\n")
 for t = 1, #tiles do
     file:write("    " .. tiles[t] .. "\n")
 end
@@ -122,9 +122,9 @@ if dialog.data.include_map then
     file:write("#define " .. var_name .. "_tiles_width " .. tiles_size_x .. "\n")
     file:write("#define " .. var_name .. "_tiles_height " .. tiles_size_y .. "\n")
 end
-file:write("extern unsigned char " .. var_name .. "_tiles[];\n")
+file:write("\nextern const unsigned char " .. var_name .. "_tiles[];\n")
 if dialog.data.include_map then
-    file:write("\nextern unsigned char " .. var_name .. "_map[];\n")
+    file:write("\nextern const unsigned char " .. var_name .. "_map[];\n")
 end
 file:close()
 

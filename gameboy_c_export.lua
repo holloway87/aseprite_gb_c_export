@@ -21,6 +21,7 @@ local dialog = Dialog()
 dialog:label{text="Select the filename to create the c source code."}:newrow()
 dialog:label{text="It will also create the .h header file."}
 dialog:file{id="file", label="Filename", entry=true, save=true, filetypes={"c"}}
+dialog:check{id="include_map", label="Include map", selected=true}
 dialog:button{id="confirm", text="Create"}
 dialog:button{text="Cancel"}
 dialog:show()
@@ -92,28 +93,39 @@ var_name = string.sub(var_name, 0, -3)
 
 local file = io.open(dialog.data.file, "w")
 
-file:write("/*\ntile size: " .. #tiles .. "\nmap size: " .. tiles_size_x .. "x" .. tiles_size_y .. "\n*/\n\nconst unsigned char " .. var_name .. "_tiles[] = {\n")
+file:write("/*\ntile size: " .. #tiles .. "\n")
+if dialog.data.include_map then
+    file:write("map size: " .. tiles_size_x .. "x" .. tiles_size_y .. "\n")
+end
+file:write("*/\n\nconst unsigned char " .. var_name .. "_tiles[] = {\n")
 for t = 1, #tiles do
     file:write("    " .. tiles[t] .. "\n")
 end
-file:write("\n};\n\n")
-
-file:write("const unsigned char " .. var_name .. "_map[" .. (#tiles_map) .. "] = {")
-for t = 1, #tiles_map do
-    if (t - 1) % 16 == 0 then
-        file:write("\n    ")
-    end
-    file:write((tiles_map[t] - 1) .. ", ")
-end
 file:write("\n};\n")
+
+if dialog.data.include_map then
+    file:write("\nconst unsigned char " .. var_name .. "_map[" .. (#tiles_map) .. "] = {")
+    for t = 1, #tiles_map do
+        if (t - 1) % 16 == 0 then
+            file:write("\n    ")
+        end
+        file:write((tiles_map[t] - 1) .. ", ")
+    end
+    file:write("\n};\n")
+end
 
 file:close()
 
 file = io.open(string.sub(dialog.data.file, 0, -2) .. "h", "w")
 file:write("#define " .. var_name .. "_tiles_count " .. #tiles .. "\n")
-file:write("#define " .. var_name .. "_tiles_width " .. tiles_size_x .. "\n")
-file:write("#define " .. var_name .. "_tiles_height " .. tiles_size_y .. "\n")
-file:write("extern unsigned char " .. var_name .. "_tiles[];\n\nextern unsigned char " .. var_name .. "_map[];\n")
+if dialog.data.include_map then
+    file:write("#define " .. var_name .. "_tiles_width " .. tiles_size_x .. "\n")
+    file:write("#define " .. var_name .. "_tiles_height " .. tiles_size_y .. "\n")
+end
+file:write("extern unsigned char " .. var_name .. "_tiles[];\n")
+if dialog.data.include_map then
+    file:write("\nextern unsigned char " .. var_name .. "_map[];\n")
+end
 file:close()
 
 app.alert("Code creation completed.")

@@ -38,7 +38,7 @@ if frame == nil then
     frame = 1
 end
 local image = Image(sprite.width, sprite.height, sprite.colorMode)
-image:drawSprite(sprite, app.activeFrame)
+image:drawSprite(sprite, frame)
 
 local offset_x = 0
 local offset_y = 0

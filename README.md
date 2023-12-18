@@ -9,9 +9,3 @@ You can find the scripts folder via the menu
 
 Copy the .lua file in there and rescan the scripts folder from Aseprite
 to use it.
-
-Limitations
------------
-
-At the moment this script only supports the grayscale palette, I will
-hopefully add support for CGB color palettes later.
